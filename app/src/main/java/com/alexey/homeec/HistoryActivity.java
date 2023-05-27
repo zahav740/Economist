@@ -119,6 +119,7 @@ public class HistoryActivity extends Activity {
         }
 
         if (records.isEmpty()) {
+
             return;
         }
 
