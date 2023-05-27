@@ -121,7 +121,6 @@ public class HistoryActivity extends Activity {
         if (records.isEmpty()) {
 
             return;
-
         }
 
         for (Transaction transaction : records) {
