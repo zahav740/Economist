@@ -1,21 +1,25 @@
 package com.alexey.homeec;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.alexey.homeec.Transaction;
+
 import java.util.Calendar;
 import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity {
-
     private boolean showByDay = false;
     private boolean showByMonth = false;
     private boolean showByYear = false;
@@ -38,7 +42,7 @@ public class HistoryActivity extends AppCompatActivity {
                 showByDay = true;
                 showByMonth = false;
                 showByYear = false;
-                loadTransactionHistory(Calendar.getInstance()); // Примечание: замените на нужную дату
+                showDatePickerDialog();
             }
         });
 
@@ -49,7 +53,7 @@ public class HistoryActivity extends AppCompatActivity {
                 showByDay = false;
                 showByMonth = true;
                 showByYear = false;
-                loadTransactionHistory(Calendar.getInstance()); // Примечание: замените на нужную дату
+                showDatePickerDialog();
             }
         });
 
@@ -60,17 +64,15 @@ public class HistoryActivity extends AppCompatActivity {
                 showByDay = false;
                 showByMonth = false;
                 showByYear = true;
-                loadTransactionHistory(Calendar.getInstance()); // Примечание: замените на нужную дату
+                showDatePickerDialog();
             }
         });
-
-        loadTransactionHistory(Calendar.getInstance()); // Загрузка истории транзакций при запуске активности
 
         swipeDetector = new SwipeDetector(5) {
             @Override
             public void onSwipeDetected(Direction direction) {
                 if (direction == Direction.RIGHT) {
-                    // Open HistoryActivity
+                    // Open MainActivity
                     Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
                     startActivity(intent);
                     overridePendingTransition(direction.getEnterAnim(), direction.getExitAnim());
@@ -78,70 +80,44 @@ public class HistoryActivity extends AppCompatActivity {
             }
         };
     }
+
     @Override
-    public boolean onTouchEvent(MotionEvent event){
+    public boolean onTouchEvent(MotionEvent event) {
         swipeDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
-    private void loadTransactionHistory(Calendar date) {
-        // Удаляем все существующие представления из таблицы
-        historyTable.removeAllViews();
+    private void showDatePickerDialog() {
+        Calendar c = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(HistoryActivity.this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        c.set(Calendar.YEAR, year);
+                        c.set(Calendar.MONTH, month);
+                        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-        // Берем данные из CsvHelper, а не из DatabaseHelper
-        CsvHelper csvHelper = new CsvHelper(this);
+                        loadTransactionHistory(c);
+                    }
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
 
-        List<Transaction> transactions = null;
-        if (showByDay) {
-            transactions = csvHelper.readTransactionRecords(); // передаем this
-            // здесь ваш код для фильтрации транзакций по дням
-        } else if (showByMonth) {
-            transactions = csvHelper.readTransactionRecords(); // передаем this
-            // здесь ваш код для фильтрации транзакций по месяцам
+        if (showByMonth) {
+            datePickerDialog.getDatePicker().findViewById(Resources.getSystem().getIdentifier("day", "id", "android")).setVisibility(View.GONE# Let's find a suitable date picker library to add to our application
+            search("Android date picker library")
         } else if (showByYear) {
-            transactions = csvHelper.readTransactionRecords(); // передаем this
-            // здесь ваш код для фильтрации транзакций по годам
+            datePickerDialog.getDatePicker().findViewById(Resources.getSystem().getIdentifier("day", "id", "android")).setVisibility(View.GONE);
+            datePickerDialog.getDatePicker().findViewById(Resources.getSystem().getIdentifier("month", "id", "android")).setVisibility(View.GONE);
         }
 
+        datePickerDialog.show();
+    }
 
-        if (transactions != null) {
-            // Добавьте каждую транзакцию в таблицу
-            for (Transaction transaction : transactions) {
-                // Создаем новую строку
-                TableRow row = new TableRow(this);
+    private void loadTransactionHistory(Calendar c) {
+        List<Transaction> transactions = historyTable.removeAllViews();
 
-                // Создаем TextView для каждого поля
-                TextView dateView = new TextView(this);
-                dateView.setText(transaction.getDate()); // Подставляем ваш формат даты
-
-                TextView incomeView = new TextView(this);
-                incomeView.setText(String.valueOf(transaction.getIncome()));
-
-                TextView expenseNameView = new TextView(this);
-                expenseNameView.setText(transaction.getExpenseName());
-
-                TextView expenseView = new TextView(this);
-                expenseView.setText(String.valueOf(transaction.getExpense()));
-
-                // Добавляем TextView в строку
-                row.addView(dateView);
-                row.addView(incomeView);
-                row.addView(expenseNameView);
-                row.addView(expenseView);
-
-                // Добавляем строку в таблицу
-                historyTable.addView(row);
-
-                // Добавляем обработчик нажатий на эту строку
-                row.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(HistoryActivity.this, DetailActivity.class);
-                        intent.putExtra("selectedDate", transaction.getDate()); // или другое значение даты, в зависимости от вашего формата
-                        startActivity(intent);
-                    }
-                });
-            }
+        for (Transaction transaction : transactions) {
+            TableRow row = new TableRow(this);
+            // TODO: Customize your table row based on the details of the transaction
+            historyTable.addView(row);
         }
     }
-}
