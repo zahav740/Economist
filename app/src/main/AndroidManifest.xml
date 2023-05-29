@@ -14,8 +14,12 @@
         android:theme="@style/Theme.HomeEc"
         tools:targetApi="31">
         <activity
-            android:name=".HistoryActivity"
+            android:name=".DetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:windowAnimationStyle="@style/ActivityAnimationStyle" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

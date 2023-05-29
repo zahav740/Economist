@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="494dp"
+        android:layout_height="419dp"
         android:orientation="vertical">
 
         <ScrollView
@@ -32,7 +32,8 @@
                         android:text="Дата"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:gravity="center" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -41,7 +42,8 @@
                         android:text="Доход"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:gravity="center" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -50,7 +52,8 @@
                         android:text="Статья"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:gravity="center" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -59,7 +62,8 @@
                         android:text="Расход"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:gravity="center" />
 
                 </TableRow>
             </TableLayout>
@@ -80,6 +84,20 @@
         android:textStyle="bold"
         app:strokeColor="@color/white"
         app:strokeWidth="1sp" />
+    <Button
+        android:id="@+id/historyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/light_gray"
+        android:text="История"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:strokeColor="@color/white"
+        app:strokeWidth="1sp"/>
+
 
     <Button
         android:id="@+id/exitButton"

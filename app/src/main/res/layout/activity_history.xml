@@ -1,34 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp">
 
-    <Button
-        android:id="@+id/buttonYear"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Year" />
+        android:orientation="horizontal"
+        android:weightSum="3">
 
-    <Button
-        android:id="@+id/buttonMonth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Month" />
+        <Button
+            android:id="@+id/buttonYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/light_gray"
+            android:text="Год"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1sp" />
 
-    <Button
-        android:id="@+id/buttonDay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Day" />
+        <Button
+            android:id="@+id/buttonMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/light_gray"
+            android:text="Месяц"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1sp" />
 
-    <Button
-        android:id="@+id/downloadButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Download" />
+        <Button
+            android:id="@+id/buttonDay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/light_gray"
+            android:text="День"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1sp" />
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/downloadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:backgroundTint="@color/light_gray"
+            android:text="Download"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
     <TableLayout
         android:id="@+id/historyTable"
         android:layout_width="match_parent"
@@ -36,5 +76,50 @@
         android:layout_weight="1"
         android:stretchColumns="*">
 
+                <TableRow android:background="@color/light_gray">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Дата"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Доход"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Статья"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Расход"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+
+                </TableRow>
+
     </TableLayout>
+</ScrollView>
 </LinearLayout>

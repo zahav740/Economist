@@ -5,4 +5,9 @@
         <item name="android:background">@drawable/dialog_button_background</item>
     </style>
 
+    <style name="ActivityAnimationStyle">
+        <item name="android:windowEnterAnimation">@anim/right_enter</item>
+        <item name="android:windowExitAnimation">@anim/left_exit</item>
+    </style>
+
 </resources>

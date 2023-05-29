@@ -2,7 +2,9 @@ package com.alexey.homeec;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Gson gson = new Gson();
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private File dataFile;
+    private SwipeDetector swipeDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +109,24 @@ public class MainActivity extends AppCompatActivity {
 
             builder.create().show();
         });
+
+        swipeDetector = new SwipeDetector(5) {
+            @Override
+            public void onSwipeDetected(Direction direction) {
+                if (direction == Direction.LEFT) {
+                    // Open HistoryActivity
+                    Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(direction.getEnterAnim(), direction.getExitAnim());
+                }
+            }
+        };
+        Button historyButton = findViewById(R.id.historyButton);
+        historyButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+            startActivity(intent);
+        });
+
     }
 
 
@@ -166,5 +187,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        swipeDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 }

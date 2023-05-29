@@ -6,5 +6,5 @@
         android:fromYDelta="0%"
         android:toYDelta="0%"
 
-        android:duration = "@integer/animExit_drt"/>
+        android:duration = "@integer/animEnter_drt"/>
 </set>
