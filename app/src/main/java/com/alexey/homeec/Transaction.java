@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class Transaction {
     private Date date;
+    private double amount;
     private double income;
     private String expenseName;
     private double expense;
@@ -37,5 +38,9 @@ public class Transaction {
 
     public double getExpense() {
         return expense;
+    }
+
+    public double getAmount() {
+        return amount;
     }
 }
