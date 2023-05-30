@@ -121,3 +121,4 @@ public class HistoryActivity extends AppCompatActivity {
             historyTable.addView(row);
         }
     }
+}
