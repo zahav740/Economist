@@ -23,16 +23,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -105,48 +105,30 @@ public class MainActivity extends AppCompatActivity {
                                 // Add row to table
                                 addRowToTable(transaction);
                             }
-
-                            dialog.dismiss();
                         }
                     })
-                    .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-            builder.create().show();
+                    .setNegativeButton("Cancel", null)
+                    .setCancelable(true)
+                    .show();
         });
 
-        swipeDetector = new SwipeDetector(5) {
-            @Override
-            public void onSwipeDetected(Direction direction) {
-                if (direction == Direction.LEFT) {
-                    // Open HistoryActivity
-                    Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                    startActivity(intent);
-                    overridePendingTransition(direction.getEnterAnim(), direction.getExitAnim());
-                }
-            }
-        };
-        Button historyButton = findViewById(R.id.historyButton);
-        historyButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-            startActivity(intent);
-        });
-
+        swipeDetector = new SwipeDetector();
+        tableLayout.setOnTouchListener(swipeDetector);
     }
 
     private void addRowToTable(Transaction transaction) {
-        TableRow tableRow = (TableRow) getLayoutInflater().inflate(R.layout.table_row, null);
+        TableRow row = (TableRow) getLayoutInflater().inflate(R.layout.table_row, null);
 
-        ((TextView) tableRow.findViewById(R.id.dateTextView)).setText(sdf.format(transaction.getDate()));
-        ((TextView) tableRow.findViewById(R.id.incomeTextView)).setText(String.valueOf(transaction.getIncome()));
-        ((TextView) tableRow.findViewById(R.id.categoryTextView)).setText(transaction.getExpenseName());
-        ((TextView) tableRow.findViewById(R.id.expenseTextView)).setText(String.valueOf(transaction.getExpense()));
+        // Форматирование даты в строку
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String dateString = formatter.format(transaction.getDate());
 
-        tableLayout.addView(tableRow);
+        ((TextView) row.findViewById(R.id.dateTextView)).setText(dateString);
+        ((TextView) row.findViewById(R.id.incomeTextView)).setText(String.valueOf(transaction.getIncome()));
+        ((TextView) row.findViewById(R.id.categoryTextView)).setText(transaction.getExpenseName());
+        ((TextView) row.findViewById(R.id.expenseTextView)).setText(String.valueOf(transaction.getExpense()));
+        tableLayout.addView(row);
+        row.setOnTouchListener(swipeDetector);
     }
 
 
@@ -181,38 +163,13 @@ public class MainActivity extends AppCompatActivity {
         updateYearCsv();
     }
 
-
-
     private void saveToDayCsv(Transaction transaction) {
-        Map<String, Double> dailyRecords = new HashMap<>();
-
-        if (dayFile.exists()) {
-            try (CSVReader csvReader = new CSVReader(new FileReader(dayFile))) {
-                String[] record;
-                while ((record = csvReader.readNext()) != null) {
-                    String date = record[0];
-                    double expense = Double.parseDouble(record[1]);
-                    dailyRecords.put(date, expense);
-                }
-            } catch (IOException | CsvException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Add new transaction to daily records
-        String date = sdf.format(transaction.getDate());
-        double expense = transaction.getExpense();
-        double previousExpense = 0.0;
-        if (dailyRecords.containsKey(date)) {
-            previousExpense = dailyRecords.get(date);
-        }
-        dailyRecords.put(date, previousExpense + expense);
-
-        // Save dailyRecords map back to day.csv file
-        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(dayFile))) {
-            for (Map.Entry<String, Double> entry : dailyRecords.entrySet()) {
-                csvWriter.writeNext(new String[]{entry.getKey(), String.valueOf(entry.getValue())});
-            }
+        // Save transaction to day.csv
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(dayFile, true))) {
+            // Форматирование даты в строку
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            String dateString = formatter.format(transaction.getDate());
+            csvWriter.writeNext(new String[]{dateString, String.valueOf(transaction.getIncome() - transaction.getExpense())});
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -222,70 +179,52 @@ public class MainActivity extends AppCompatActivity {
     private void updateMonthCsv() {
         Map<String, Double> monthlyRecords = new HashMap<>();
 
-        if (monthFile.exists()) {
-            try (CSVReader csvReader = new CSVReader(new FileReader(monthFile))) {
-                String[] record;
-                while ((record = csvReader.readNext()) != null) {
-                    String date = record[0];
-                    double expense = Double.parseDouble(record[1]);
-                    monthlyRecords.put(date, expense);
+        try (CSVReader csvReader = new CSVReader(new FileReader(dayFile))) {
+            List<String[]> records = csvReader.readAll();
+            for (String[] record : records) {
+                String date = record[0];
+                double amount = Double.parseDouble(record[1]);
+                String month = monthSdf.format(sdf.parse(date));
+                // Используйте get и проверьте на null
+                Double previousAmount = monthlyRecords.get(month);
+                if (previousAmount == null) {
+                    previousAmount = 0.0;
                 }
-            } catch (IOException | CsvException e) {
-                e.printStackTrace();
+                monthlyRecords.put(month, previousAmount + amount);
             }
+        } catch (IOException | CsvException | ParseException e) {
+            e.printStackTrace();
         }
 
-        // Update monthly records based on daily records in day.csv file
-        if (dayFile.exists()) {
-            try (CSVReader csvReader = new CSVReader(new FileReader(dayFile))) {
-                String[] record;
-                while ((record = csvReader.readNext()) != null) {
-                    String date = record[0].substring(0, 7); // Extract the month from the date
-                    double expense = Double.parseDouble(record[1]);
-                    double previousExpense = 0.0;
-                    if (monthlyRecords.containsKey(date)) {
-                        previousExpense = monthlyRecords.get(date);
-                    }
-                    monthlyRecords.put(date, previousExpense + expense);
-                }
-            } catch (IOException | CsvException e) {
-                e.printStackTrace();
+        // Save monthlyRecords map back to month.csv file
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(monthFile))) {
+            for (Map.Entry<String, Double> entry : monthlyRecords.entrySet()) {
+                csvWriter.writeNext(new String[]{entry.getKey(), String.valueOf(entry.getValue())});
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
 
     private void updateYearCsv() {
         Map<String, Double> yearlyRecords = new HashMap<>();
 
-        if (yearFile.exists()) {
-            try (CSVReader csvReader = new CSVReader(new FileReader(yearFile))) {
-                String[] record;
-                while ((record = csvReader.readNext()) != null) {
-                    String date = record[0];
-                    double expense = Double.parseDouble(record[1]);
-                    yearlyRecords.put(date, expense);
+        try (CSVReader csvReader = new CSVReader(new FileReader(monthFile))) {
+            List<String[]> records = csvReader.readAll();
+            for (String[] record : records) {
+                String date = record[0];
+                double amount = Double.parseDouble(record[1]);
+                String year = yearSdf.format(monthSdf.parse(date));
+                // Используйте get и проверьте на null
+                Double previousAmount = yearlyRecords.get(year);
+                if (previousAmount == null) {
+                    previousAmount = 0.0;
                 }
-            } catch (IOException | CsvException e) {
-                e.printStackTrace();
+                yearlyRecords.put(year, previousAmount + amount);
             }
-        }
-
-        // Update yearly records based on monthly records in month.csv file
-        if (monthFile.exists()) {
-            try (CSVReader csvReader = new CSVReader(new FileReader(monthFile))) {
-                String[] record;
-                while ((record = csvReader.readNext()) != null) {
-                    String date = record[0].substring(0, 4); // Extract the year from the date
-                    double expense = Double.parseDouble(record[1]);
-
-                    // Check if date already exists in the map, otherwise default to 0.0
-                    double previousExpense = yearlyRecords.containsKey(date) ? yearlyRecords.get(date) : 0.0;
-
-                    yearlyRecords.put(date, previousExpense + expense);
-                }
-            } catch (IOException | CsvException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException | CsvException | ParseException e) {
+            e.printStackTrace();
         }
 
         // Save yearlyRecords map back to year.csv file
@@ -300,32 +239,45 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void loadTransactions() {
-        if (dataFile.exists()) {
-            try (CSVReader reader = new CSVReader(new FileReader(dataFile))) {
-                String[] line;
-                while ((line = reader.readNext()) != null) {
-                    String date = line[0];
-                    String incomeStr = line[1];
-                    double income = 0.0;
-                    if (incomeStr.matches("-?\\d+(\\.\\d+)?")) {
-                        income = Double.parseDouble(incomeStr);
-                    } else {
-                        continue; // Пропускать некорректные значения
-                    }
-                    double expense = Double.parseDouble(line[3]);
-                    String expenseName = line[2]; // Добавить объявление переменной expenseName
-                    Transaction transaction = new Transaction(date, income, expenseName, expense);
-                    transactionList.add(transaction);
-                }
-            } catch (IOException | CsvException e) {
-                e.printStackTrace();
+        try (CSVReader reader = new CSVReader(new FileReader(dataFile))) {
+            List<String[]> rows = reader.readAll();
+            for (int i = 1; i < rows.size(); i++) {
+                String[] row = rows.get(i);
+                String date = row[0];
+                double income = Double.parseDouble(row[1]);
+                String expenseName = row[2];
+                double expense = Double.parseDouble(row[3]);
+                transactionList.add(new Transaction(date, income, expenseName, expense));
             }
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        swipeDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
+    private class SwipeDetector implements View.OnTouchListener {
+        private static final int MIN_DISTANCE = 100;
+        private float downX, upX;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    downX = event.getX();
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    upX = event.getX();
+                    float deltaX = downX - upX;
+
+                    if (Math.abs(deltaX) > MIN_DISTANCE) {
+                        if (deltaX < 0) {
+                            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                            startActivity(intent);
+                            return true;
+                        }
+                    }
+                    return false;
+            }
+            return false;
+        }
     }
 }

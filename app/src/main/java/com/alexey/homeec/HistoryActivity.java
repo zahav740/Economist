@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -194,7 +195,6 @@ public class HistoryActivity extends AppCompatActivity {
         return transactions;
     }
 
-
     private List<Transaction> getTransactionsForMonth(String date) {
         List<Transaction> transactions = new ArrayList<>();
 
@@ -213,6 +213,7 @@ public class HistoryActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        Log.d("MyApp", "Transactions for month: " + transactions);
 
         return transactions;
     }
@@ -236,6 +237,7 @@ public class HistoryActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        Log.d("MyApp", "Transactions for month: " + transactions);
 
         return transactions;
     }
