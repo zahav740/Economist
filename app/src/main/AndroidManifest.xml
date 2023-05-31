@@ -14,15 +14,6 @@
         android:theme="@style/Theme.HomeEc"
         tools:targetApi="31">
         <activity
-            android:name=".DayActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MonthActivity"
-            android:exported="false" />
-        <activity
-            android:name=".YearActivity"
-            android:exported="false" />
-        <activity
             android:name=".DetailActivity"
             android:exported="false" />
         <activity
