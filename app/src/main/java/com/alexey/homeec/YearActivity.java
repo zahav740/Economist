@@ -3,21 +3,33 @@ package com.alexey.homeec;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class YearActivity extends AppCompatActivity {
 
     private int selectedYear;
+    private CsvHelper csvHelper;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_year);
+
+        recyclerView = findViewById(R.id.yearRecyclerView);
+        csvHelper = new CsvHelper(this);
 
         // Show the DatePickerDialog to select the year
         showYearPickerDialog();
@@ -42,8 +54,20 @@ public class YearActivity extends AppCompatActivity {
     }
 
     private void loadYearData() {
-        // Load the list of months with total amounts for the selected year
-        // For each month create a new list item
-        // Add click listener to each item to start MonthActivity with selected year and month
+        List<Transaction> allTransactions = csvHelper.readTransactionRecords();
+        List<String> yearTransactions = new ArrayList<>();
+        for (Transaction transaction : allTransactions) {
+            Calendar transactionDate = Calendar.getInstance();
+            transactionDate.setTime(transaction.getDate()); // assuming transaction.getDate() returns a Date object
+            int transactionYear = transactionDate.get(Calendar.YEAR);
+            if (transactionYear == selectedYear) {
+                yearTransactions.add(transaction.toString());
+            }
+        }
+
+        YearAdapter adapter = new YearAdapter(this, yearTransactions, selectedYear);
+        recyclerView.setAdapter(adapter);
     }
+
+
 }

@@ -69,7 +69,20 @@ public class HistoryActivity extends AppCompatActivity {
                 showByDay = false;
                 showByMonth = true;
                 showByYear = false;
-                showDatePickerDialog();
+
+                // Создаем новый диалог, показываем выбор месяца
+                YearMonthPickerDialog pickerDialog = new YearMonthPickerDialog(HistoryActivity.this, true);
+                pickerDialog.setListener(new YearMonthPickerDialog.OnYearMonthSetListener() {
+                    @Override
+                    public void onYearMonthSet(int year, int month) {
+                        // Обрабатываем выбранный год и месяц
+                        Calendar c = Calendar.getInstance();
+                        c.set(Calendar.YEAR, year);
+                        c.set(Calendar.MONTH, month-1);
+                        loadTransactionHistory(c);
+                    }
+                });
+                pickerDialog.show();
             }
         });
 
@@ -80,9 +93,22 @@ public class HistoryActivity extends AppCompatActivity {
                 showByDay = false;
                 showByMonth = false;
                 showByYear = true;
-                showDatePickerDialog();
+
+                // Создаем новый диалог, скрываем выбор месяца
+                YearMonthPickerDialog pickerDialog = new YearMonthPickerDialog(HistoryActivity.this, false);
+                pickerDialog.setListener(new YearMonthPickerDialog.OnYearMonthSetListener() {
+                    @Override
+                    public void onYearMonthSet(int year, int month) {
+                        // Обрабатываем выбранный год, игнорируем месяц
+                        Calendar c = Calendar.getInstance();
+                        c.set(Calendar.YEAR, year);
+                        loadTransactionHistory(c);
+                    }
+                });
+                pickerDialog.show();
             }
         });
+
 
         swipeDetector = new SwipeDetector(5) {
             @Override
@@ -96,6 +122,7 @@ public class HistoryActivity extends AppCompatActivity {
             }
         };
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
