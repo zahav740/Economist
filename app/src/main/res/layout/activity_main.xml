@@ -8,12 +8,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="419dp"
+        android:layout_height="365dp"
         android:orientation="vertical">
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="341dp"
             android:fillViewport="true">
 
             <TableLayout
@@ -29,41 +29,41 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="Дата"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="Доход"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="Статья"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="Расход"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+                        android:textStyle="bold" />
 
                 </TableRow>
             </TableLayout>
