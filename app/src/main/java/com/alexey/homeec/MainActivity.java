@@ -111,6 +111,15 @@ public class MainActivity extends AppCompatActivity {
                     .setCancelable(true)
                     .show();
         });
+        Button historyButton = findViewById(R.id.historyButton);
+        historyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         swipeDetector = new SwipeDetector();
         tableLayout.setOnTouchListener(swipeDetector);
@@ -135,7 +144,8 @@ public class MainActivity extends AppCompatActivity {
     private void saveData(Transaction transaction) {
         String jsonString = gson.toJson(transactionList);
         try {
-            FileWriter writer = new FileWriter("test.json");
+//            File file = new File(getFilesDir(), "test.json");
+            FileWriter writer = new FileWriter(new File(MainActivity.this.getFilesDir(), "test.json"));
             writer.write(jsonString);
             writer.close();
         } catch (IOException e) {
