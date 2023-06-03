@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private SimpleDateFormat yearSdf = new SimpleDateFormat("yyyy");
     private File dataFile, dayFile, monthFile, yearFile;
     private SwipeDetector swipeDetector;
+    //v
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
